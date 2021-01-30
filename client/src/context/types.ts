@@ -1,7 +1,8 @@
 export interface State {
   socket: SocketIOClient.Socket,
   game: Game,
-  playerTeam: Color
+  playerTeam: Color,
+  
 }
 
 export interface Coordinate {
@@ -19,7 +20,8 @@ export interface Game {
   board: Board,
   playersTurn: Color,
   inCheck: boolean,
-  winner: Color
+  winner: Color,  
+  boardLength: number
 }
 
 export interface Board {
@@ -44,7 +46,9 @@ export interface Piece {
   color: Color,
   type: PieceType,
   tryMove: (board: Board, targetCoord: Coordinate) => boolean,
+  makeMove: (board: Board, targetCoord: Coordinate) => void,
   setCoordToPiece: (startingCoord: Coordinate) => void,
+  moveMade: (piece: Piece) => void,
 }
 
 export interface BoardTiles { 

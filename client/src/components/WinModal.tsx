@@ -11,7 +11,7 @@ function WinModal({ winner }: WinModalProps) {
     { winner !== Color.Null && (
       <div className="win-modal-background">
         <div className="win-modal flex center">
-          <h3>Congratulations!</h3>
+          <h5>Congratulations!</h5>
           {winner + " wins!"}
         </div>
       </div>

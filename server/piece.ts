@@ -4,6 +4,7 @@ class ChessPiece implements Piece {
   color: Color = Color.Null
   type = PieceType.Empty
   coord: Coordinate
+  queenCantPlayCounter = 0
 
   constructor(color, type: PieceType, startingCoord: Coordinate){
     this.color = color
@@ -16,7 +17,6 @@ class ChessPiece implements Piece {
   }
 
   isCoordEmpty(board: Board, targetCoord: Coordinate){
-    console.log("targetCoord: ", targetCoord);
     return board.tiles[targetCoord.row][targetCoord.col].piece.type === PieceType.Empty
   }
 
@@ -24,69 +24,38 @@ class ChessPiece implements Piece {
     if (rowdiff !== coldiff) return false; // ensure diagonal
     const c = this.coord
     // ensure something not in way
-    let j = 0;
-    return false;
     //up,right
     if (targetCoord.row<c.row && targetCoord.col>c.col){
-      j = targetCoord.col-1;
-      do{
-        for (let i=targetCoord.row+1; i< c.row; i++){
-          if (!this.isCoordEmpty(board, {row: i, col: j})){ 
-            return false;
-          }
-          j--;
-          if(j < 0 || j > board.tiles.length){
-            break;
-          }
+      for (let row=c.row-1, col=c.col+1; row>targetCoord.row; row--, col++) {
+        if (!this.isCoordEmpty(board, {row, col})){ 
+          return false;
         }
-      } while (j>c.col);
+      }
     }
     //up,left
     else if (targetCoord.row<c.row && targetCoord.col<c.col){
-      j = targetCoord.col+1;
-      do{
-        for (let i=targetCoord.row+1; i< c.row; i++){
-          if (!this.isCoordEmpty(board, {row: i, col: j})){ 
-            return false;
-          }      
-          j++;
-          if(j < 0 || j > board.tiles.length){
-            break;
-          }
+      for (let row=c.row-1, col=c.col-1; row>targetCoord.row; row--, col--) {
+        if (!this.isCoordEmpty(board, {row, col})){ 
+          return false;
         }
-      }while (j<c.col);
+      }
     }
     //down,right
     else if (targetCoord.row>c.row && targetCoord.col>c.col) {
-      j = c.row+1;
-      do {
-        for (let i=c.row+1; i< targetCoord.row; i++) {
-          if (!this.isCoordEmpty(board, {row: i, col: j})){ 
-            return false;
-          }      
-          j++;
-          if(j < 0 || j > board.tiles.length){
-            break;
-          }
+      for (let row=c.row+1, col=c.col+1; row<targetCoord.row; row++, col++) {
+        if (!this.isCoordEmpty(board, {row, col})){ 
+          return false;
         }
-      } while (j<targetCoord.col);
+      }
     }
     //down,left
     else if (targetCoord.row>c.row && targetCoord.col<c.col)
     {
-      j = c.row-1;
-      do {
-        for (let i=c.row+1; i< targetCoord.row; i++) {
-          if (!this.isCoordEmpty(board, {row: i, col: j})){ 
-            return false;
-          }      
-          j--;
-          if(j < 0 || j > board.tiles.length){
-            break;
-          }
+      for (let row=c.row+1, col=c.col-1; row<targetCoord.row; row++, col--) {
+        if (!this.isCoordEmpty(board, {row, col})){ 
+          return false;
         }
       }
-      while (j>targetCoord.col);
     }
     return true;
   }
@@ -94,12 +63,12 @@ class ChessPiece implements Piece {
   tryMoveStraight(board: Board, targetCoord: Coordinate, rowdiff: number, coldiff: number){
     if ([coldiff, rowdiff].filter(x=>x===0).length != 1) return false; // ensure str
     const c = this.coord
-    if (rowdiff === 1 && coldiff === 1){
-      return true //move L,R,U,D just 1 sq
-    }  
+    if ((targetCoord.row===c.row && coldiff===1) || (targetCoord.col===c.col && rowdiff===1)) {
+      return true; //move L,R,U,D just 1 sq  
+    }
     // ensure something not in way    
-    //right  
-    else if (targetCoord.row===c.row && targetCoord.col>c.col){             
+    //right
+    if (targetCoord.row===c.row && targetCoord.col>c.col){             
       for (let i = c.col+1; i<targetCoord.col; i++){
           if (!this.isCoordEmpty(board, {row: targetCoord.row, col: i})) return false
       }
@@ -138,25 +107,24 @@ class ChessPiece implements Piece {
     const c = this.coord
     const targetPiece: Piece = board.tiles[targetCoord.row][targetCoord.col].piece
     if (this.color === Color.White){
-      if(targetCoord.row === c.row - 1 && targetPiece.type === PieceType.Empty){
-        // white pawn move up 1. remember that smaller row index means up
-        return true
+      if (c.row - targetCoord.row > 3) return false // up to 3 spaces up
+      if (targetCoord.row >= c.row) return false // cant move down
+      for (let row = c.row-1; row>targetCoord.row; row--){
+          if (!this.isCoordEmpty(board, {row, col: c.col})) return false
       }
-      else {
-        // white pawn capture up-diag
-        return this.isOpponent(targetPiece) && targetCoord.row === c.row - 1 && coldiff === 1
-      }
-    } else {
-      if(targetCoord.row === c.row + 1 && targetPiece.type === PieceType.Empty){
-        // black pawn move down 1
-        return true
-      }
-      else {
-        // black pawn capture down-diag
-        return this.isOpponent(targetPiece) && targetCoord.row === c.row + 1 && coldiff === 1
+    } else { // black pawn moving down
+      if (targetCoord.row - c.row > 3) return false // up to 3 spaces down
+      if (targetCoord.row <= c.row) return false // cant move up
+      for (let row = c.row+1; row<targetCoord.row; row++){
+          if (!this.isCoordEmpty(board, {row, col: c.col})) return false
       }
     }
-    return false;
+    if (targetPiece.type === PieceType.Empty){
+      return c.col === targetCoord.col
+    }
+    else{
+      return coldiff===1 && this.isOpponent(board.tiles[targetCoord.row][c.col].piece)
+    }
   }
 
   bothArraysEmpty(a1: Piece[], a2: Piece[]) {
@@ -228,8 +196,6 @@ class ChessPiece implements Piece {
   tryMove(board: Board, targetCoord: Coordinate): boolean{
     if (this.type === PieceType.Empty) return false
     const c = this.coord
-    console.log("This Coord: ", this.coord)
-    console.log("My Type: ", this.type)
     const targetPiece: Piece = board.tiles[targetCoord.row][targetCoord.col].piece
     if (targetPiece.color === this.color){
       // cannot move where you already have a piece
@@ -247,11 +213,11 @@ class ChessPiece implements Piece {
       case PieceType.Queen:
         return this.tryMoveStraight(board, targetCoord, rowdiff, coldiff) || this.tryMoveDiagonal(board, targetCoord, rowdiff, coldiff)
       case PieceType.King:
-        return rowdiff === 1 && coldiff === 1
+        return ((rowdiff===1 && [0,1].includes(coldiff)) || (rowdiff===0 && coldiff===1))
       case PieceType.Rook:
         return this.tryMoveStraight(board, targetCoord, rowdiff, coldiff)
       case PieceType.Vanguard: 
-      return false // TODO
+        return this.tryMoveVanguard(board, targetCoord, rowdiff, coldiff)
       default:
         return false
     }
@@ -259,6 +225,9 @@ class ChessPiece implements Piece {
 
   makeMove(board: Board, targetCoord: Coordinate) {
     if(this.tryMove(board, targetCoord)){
+      if(this.type === PieceType.Queen && (this.queenCantPlayCounter === 0)){
+        this.queenCantPlayCounter = 5;
+      }
       board.tiles[this.coord.row][this.coord.col].piece = this.emptyPiece({row: this.coord.row, col: this.coord.col})
       this.coord = targetCoord
       board.tiles[this.coord.row][this.coord.col].piece = this
@@ -268,6 +237,15 @@ class ChessPiece implements Piece {
 
   emptyPiece(coord: Coordinate): Piece{
     return new ChessPiece(Color.Null, PieceType.Empty, coord);
+  }
+
+  moveMade(piece: Piece){
+    if(piece.type === PieceType.Queen && piece.color === this.color){
+      this.queenCantPlayCounter = 5;
+    }
+    else{
+      this.queenCantPlayCounter--;
+    }
   }
 
 }

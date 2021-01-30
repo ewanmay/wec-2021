@@ -25,11 +25,12 @@ const initialGame = {
   },
   playersTurn: Color.Null, 
   inCheck: false, 
+  boardLength: 8,  
   winner: Color.Null,
 }
 
 export const initialState: State = {
   socket,
-  game: initialGame,  
+  game: initialGame,
   playerTeam: Color.Null
 }
