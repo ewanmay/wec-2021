@@ -1,0 +1,41 @@
+.App {
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  transition: transform 200ms ease 0s;
+  user-select: none; 
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  max-height: 100%;
+}
+
+.fill {
+  flex: 1 1;
+}
+
+.fit {
+  flex: 0 1;
+}
+
+.center {
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  text-align: center;
+  vertical-align: center;
+}
+
+.left {
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+  text-align: start;
+  vertical-align: center;
+}

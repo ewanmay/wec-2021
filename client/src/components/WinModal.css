@@ -1,0 +1,21 @@
+.win-modal-background {  
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 2000;
+  background-color: rgba(1, 1, 1, 0.5)
+}
+
+.win-modal { 
+  position:absolute; 
+  background-color: white;
+  border: 10px solid lightblue;
+  width: 300px;
+  height: 150px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 5px;
+  font-size: 25px;
+
+}

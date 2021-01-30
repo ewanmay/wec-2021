@@ -1,0 +1,30 @@
+.board {
+  height: 810px;
+  width: 810px;
+  border: 5px solid coral
+}
+.tile {  
+  height: 100px;
+  width: 100px;
+}
+
+.row {
+  height: 100px;
+}
+
+.tile.b {
+  background-color: gray;
+  color: white;
+} 
+
+.tile.w {
+  background-color: white;
+}
+
+.tile.piece:hover {
+  cursor: pointer;
+}
+
+.highlight.tile{
+  background-color: yellow;
+}
