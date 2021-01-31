@@ -24,3 +24,15 @@
   bottom: 10px;
   right: 10px;
 }
+
+.log-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+.log-number {
+  font-weight: 500;
+}
+
+.log-move {
+  font-weight: 400
+}

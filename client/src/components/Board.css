@@ -11,6 +11,10 @@
   background-color: white;
 }
 
+.tile {
+  position: relative
+}
+
 .tile.piece:hover {
   cursor: pointer;
 }
@@ -28,4 +32,26 @@
 
 .header {
   border-bottom: 3px gray solid;
+}
+
+.row-number {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  z-index: 100;
+}
+
+.col-number {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  z-index: 100
+}
+
+.pieces{
+  height: 80px;
+}
+
+.log {
+  background-color: lightgrey;
 }

@@ -36,22 +36,17 @@ export default function Board() {
   }
 
   const placeVanguard = (rowIndex: number, colIndex: number, tile: BoardTiles) => {
-    console.log("Placing vangaurd?")
-    let vanguards = (state.playerTeam === Color.Black) ? state.game.board.blackVangards : state.game.board.vangards;
-    vanguards = state.playerTeam === Color.White ? state.game.board.whiteVangards: vanguards;
-
-    console.log(vanguards)
-    console.log(tile.piece.type === PieceType.Pawn, tile.piece.color === state.playerTeam, vanguards > 0)
-    if (tile.piece.type === PieceType.Pawn && tile.piece.color === state.playerTeam && vanguards < state.game.board.vangards) {
-      console.log("I AM EMITTING")
-      state.socket.emit("place-vanguard", {row: rowIndex, col: colIndex})
+    let vanguards = (state.playerTeam === Color.Black) ? state.game.board.blackVanguards : state.game.board.vanguards;
+    vanguards = state.playerTeam === Color.White ? state.game.board.whiteVanguards : vanguards;
+    if (tile.piece.type === PieceType.Pawn && tile.piece.color === state.playerTeam && vanguards < state.game.board.vanguards) {
+      state.socket.emit("place-vanguard", { row: rowIndex, col: colIndex })
     }
   }
 
   const handleTileSelection = (row: number, col: number, tile: BoardTiles,) => {
     const piece = tile.piece;
     const selectionCoord = { row, col };
-    
+
     if (piece && selectedPiece && isAvailableTile(selectionCoord)) {
       movePiece(selectionCoord)
       unselectAll()
@@ -105,6 +100,8 @@ export default function Board() {
     return isSelected || isAvailable
   }
 
+  const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"]
+
   return (
     <div className="board flex center" style={getBoardDimensions()}>
       {state.game.board.tiles.map((row, rowIndex) =>
@@ -114,13 +111,21 @@ export default function Board() {
             <div className={`flex center tile p-0 
             ${getTileColor(rowIndex, colIndex)} 
             ${tile.piece.type !== PieceEnum.Empty ? "piece" : ""}`}
-              onClick={(e) => { handleTileSelection(rowIndex, colIndex, tile)}}
-              onContextMenu={(e) => {e.preventDefault()
-                handleTileContextMenu(rowIndex, colIndex, tile)}}
+              onClick={(e) => { handleTileSelection(rowIndex, colIndex, tile) }}
+              onContextMenu={(e) => {
+                e.preventDefault()
+                handleTileContextMenu(rowIndex, colIndex, tile)
+              }}
               key={Math.random()}
               style={getTileDimensions()}>
               <div className={shouldHighlight(rowIndex, colIndex) ? "highlight flex center " : ""}>
                 <ChessPiece piece={tile.piece}></ChessPiece>
+                {colIndex === 0 && (<div className="row-number">
+                  {rowIndex + 1}
+                </div>)}
+                {rowIndex === state.game.boardLength - 1 && (<div className="col-number">
+                  {alphabet[colIndex]}
+                </div>)}
               </div>
             </div>
           ))}

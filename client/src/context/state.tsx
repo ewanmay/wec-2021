@@ -19,9 +19,9 @@ for (let i = 0; i < emptyRow.length; i++) {
 const initialGame = {
   board: {
     tiles: emptyRow,    
-    vangards: 4, 
-    whiteVangards: 2,
-    blackVangards: 2
+    vanguards: 4, 
+    whiteVanguards: 2,
+    blackVanguards: 2
   },
   playersTurn: Color.Null, 
   inCheck: Color.Null,  
@@ -29,11 +29,13 @@ const initialGame = {
   started: false,
   boardLength: 8,  
   stalemate: false,
-  winner: Color.Null,
+  winner: Color.Null
 }
 
 export const initialState: State = {
   socket,
   game: initialGame,
-  playerTeam: Color.Null
+  playerTeam: Color.Null,  
+  placingVanguards: false,
+  log: { blackMoves: [], whiteMoves: []}
 }

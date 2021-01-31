@@ -1,8 +1,9 @@
 export interface State {
   socket: SocketIOClient.Socket,
   game: Game,
-  playerTeam: Color,
-  
+  playerTeam: Color,  
+  placingVanguards: boolean,
+  log: Log
 }
 
 export interface Coordinate {
@@ -30,9 +31,9 @@ export interface Game {
 
 export interface Board {
   tiles: BoardTiles[][],
-  vangards: number, 
-  whiteVangards: number,
-  blackVangards: number
+  vanguards: number, 
+  whiteVanguards: number,
+  blackVanguards: number
 }
 
 export enum PieceType {
@@ -60,4 +61,9 @@ export interface Piece {
 export interface BoardTiles { 
   piece: Piece,
   spacesToMove: Coordinate[]
+}
+
+export interface Log {
+  blackMoves: string[],
+  whiteMoves: string[]
 }
