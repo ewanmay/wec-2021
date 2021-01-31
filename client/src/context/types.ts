@@ -13,15 +13,19 @@ export interface Coordinate {
 export enum Color {
   White = "White",
   Black = "Black",
+  Spectator = "Spectator",
   Null = "Null"
 }
 
 export interface Game {
   board: Board,
   playersTurn: Color,
-  inCheck: boolean,
-  winner: Color,  
-  boardLength: number
+  inCheck: Color,
+  winner: Color,
+  stalemate: boolean, 
+  boardLength: number,
+  started: boolean,
+  takenPieces: Piece[]
 }
 
 export interface Board {
@@ -45,10 +49,12 @@ export enum PieceType {
 export interface Piece {
   color: Color,
   type: PieceType,
-  tryMove: (board: Board, targetCoord: Coordinate) => boolean,
-  makeMove: (board: Board, targetCoord: Coordinate) => void,
-  setCoordToPiece: (startingCoord: Coordinate) => void,
-  moveMade: (piece: Piece) => void,
+  queenCantPlayCounter: number,
+  coord: Coordinate,
+  // tryMove: (board: Board, targetCoord: Coordinate) => boolean,
+  // makeMove: (board: Board, targetCoord: Coordinate) => void,
+  // setCoordToPiece: (startingCoord: Coordinate) => void,
+  // moveMade: (piece: Piece) => void,
 }
 
 export interface BoardTiles { 

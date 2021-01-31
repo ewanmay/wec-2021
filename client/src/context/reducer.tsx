@@ -1,6 +1,6 @@
 import { State } from "./types";
 
-export const reducer = (state: State, action: Record<string, any>): State => {  
+export const reducer = (state: State, action: Record<string, any>): State => {
   console.log(action.payload);
   switch (action.type) {
     case "UPDATE_GAME": {
@@ -10,7 +10,9 @@ export const reducer = (state: State, action: Record<string, any>): State => {
     case "SET_USER_TEAM":
       return { ...state, playerTeam: action.payload };
     case "SET_BOARD_SIZE":
-      return {...state, game: {...state.game, boardLength: action.payload}}
+      return { ...state, game: { ...state.game, boardLength: action.payload } }
+    case "SELECT_TEAM":
+      return { ...state, playerTeam: action.payload} 
     default: {
       return state;
     }

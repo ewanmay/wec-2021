@@ -24,8 +24,11 @@ const initialGame = {
     blackVangards: 2
   },
   playersTurn: Color.Null, 
-  inCheck: false, 
+  inCheck: Color.Null,  
+  takenPieces: [],
+  started: false,
   boardLength: 8,  
+  stalemate: false,
   winner: Color.Null,
 }
 

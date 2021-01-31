@@ -1,11 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/context';
-import { BoardTiles, Coordinate, Piece as PieceType, PieceType as PieceEnum } from '../context/types';
+import { BoardTiles, Color, Coordinate, Piece, PieceType as PieceEnum, PieceType } from '../context/types';
 import ChessPiece from './ChessPiece';
 import './Board.css'
 
 export default function Board() {
-  const [selectedPiece, setSelectedPiece] = useState({} as PieceType)
+  const [selectedPiece, setSelectedPiece] = useState({} as Piece)
   const [selectedPieceCoordinates, setSelectedPieceCoordinates] = useState({} as Coordinate)
   const [availableSelection, setAvailableSelection] = useState([] as Coordinate[])
   const [state,] = useContext(AppContext)
@@ -18,71 +18,62 @@ export default function Board() {
   }
 
   const getTileDimensions = () => {
-    switch(state.game.boardLength) {
-      case 8:
-        return {"width": 100, "height": 100};
-      case 10:
-        return {"width": 90, "height": 90};
-      case 12:
-        return {"width": 80, "height": 80};
-      case 14:        
-        return {"width": 70, "height": 70};
-    }
+    return { "width": 800 / state.game.boardLength, "height": 800 / state.game.boardLength };
   }
 
   const getRowDimensions = () => {
-    switch(state.game.boardLength) {
-      case 8:
-        return { "height": 100};
-      case 10:
-        return {"height": 90};
-      case 12:
-        return {"height": 80};
-      case 14:        
-        return {"height": 70};
-    }
+    return { "height": 800 / state.game.boardLength };
   }
 
   const getBoardDimensions = () => {
-    switch(state.game.boardLength) {
-      case 8:
-        return {"width": 820, "height": 820};
-      case 10:
-        return {"width": 920, "height": 920};
-      case 12:
-        return {"width": 980, "height": 980};
-      case 14:        
-        return {"width": 1000, "height": 1000};
-    }    
+    return { "width": 820, "height": 820 };
   }
 
-  const unselectAll = () => {    
-    selectPiece({} as PieceType);
+  const unselectAll = () => {
+    selectPiece({} as Piece);
     setSelectedPieceCoordinates({} as Coordinate)
     setAvailableSelection([])
   }
 
-  const handleTileSelection = (rowIndex: number, colIndex: number, tile: BoardTiles,) => {
+  const placeVanguard = (rowIndex: number, colIndex: number, tile: BoardTiles) => {
+    console.log("Placing vangaurd?")
+    let vanguards = (state.playerTeam === Color.Black) ? state.game.board.blackVangards : state.game.board.vangards;
+    vanguards = state.playerTeam === Color.White ? state.game.board.whiteVangards: vanguards;
+
+    console.log(vanguards)
+    console.log(tile.piece.type === PieceType.Pawn, tile.piece.color === state.playerTeam, vanguards > 0)
+    if (tile.piece.type === PieceType.Pawn && tile.piece.color === state.playerTeam && vanguards < state.game.board.vangards) {
+      console.log("I AM EMITTING")
+      state.socket.emit("place-vanguard", {row: rowIndex, col: colIndex})
+    }
+  }
+
+  const handleTileSelection = (row: number, col: number, tile: BoardTiles,) => {
     const piece = tile.piece;
-    const selectionCoord = { row: rowIndex, col: colIndex };
+    const selectionCoord = { row, col };
+    
     if (piece && selectedPiece && isAvailableTile(selectionCoord)) {
       movePiece(selectionCoord)
       unselectAll()
-    }   
+    }
     else if (isSameTile(selectionCoord, selectedPieceCoordinates)) {
       unselectAll()
-    }  
+    }
     else if (piece && piece.color === state.playerTeam && state.game.playersTurn === state.playerTeam) {
       selectPiece(piece)
       setSelectedPieceCoordinates(selectionCoord)
       setAvailableSelection(tile.spacesToMove)
-    }   
+    }
     else {
       unselectAll()
     }
   }
 
-  const selectPiece = (piece: PieceType) => {
+  const handleTileContextMenu = (row: number, col: number, tile: BoardTiles,) => {
+    placeVanguard(row, col, tile)
+  }
+
+  const selectPiece = (piece: Piece) => {
     if (state.playerTeam === state.game.playersTurn) {
       setSelectedPiece(piece)
     }
@@ -108,7 +99,7 @@ export default function Board() {
   }
 
   const shouldHighlight = (rowIndex: number, colIndex: number) => {
-    const newCoord = {row: rowIndex, col: colIndex};
+    const newCoord = { row: rowIndex, col: colIndex };
     const isAvailable = isAvailableTile(newCoord)
     const isSelected = isSameTile(newCoord, selectedPieceCoordinates)
     return isSelected || isAvailable
@@ -123,7 +114,9 @@ export default function Board() {
             <div className={`flex center tile p-0 
             ${getTileColor(rowIndex, colIndex)} 
             ${tile.piece.type !== PieceEnum.Empty ? "piece" : ""}`}
-              onClick={() => handleTileSelection(rowIndex, colIndex, tile)}
+              onClick={(e) => { handleTileSelection(rowIndex, colIndex, tile)}}
+              onContextMenu={(e) => {e.preventDefault()
+                handleTileContextMenu(rowIndex, colIndex, tile)}}
               key={Math.random()}
               style={getTileDimensions()}>
               <div className={shouldHighlight(rowIndex, colIndex) ? "highlight flex center " : ""}>

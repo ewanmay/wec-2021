@@ -34,8 +34,26 @@
 
 .left {
   justify-content: flex-start;
-  align-items: center;
-  align-content: center;
+  align-items: flex-end;
+}
+
+.right {
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.top {  
+  align-items: flex-start;
+  align-content: flex-start;
   text-align: start;
-  vertical-align: center;
+  vertical-align: flex-start;
+}
+
+.icon{
+  width: 20px;
+  height: 25px;
+}
+
+h4 {
+  margin: 0;
 }

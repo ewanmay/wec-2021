@@ -1,21 +1,11 @@
 .board {
-  height: 820px;
-  width: 820px;
-  border: 10px solid rgb(255, 127, 80)
-}
-.tile {  
-  height: 100px;
-  width: 100px;
-}
-
-.row {
-  height: 100px;
+  border: 10px solid rgb(255, 127, 80);
 }
 
 .tile.b {
   background-color: gray;
   color: white;
-} 
+}
 
 .tile.w {
   background-color: white;
@@ -25,9 +15,17 @@
   cursor: pointer;
 }
 
-.highlight{
+.highlight {
   width: 100px;
   height: 100px;
   background-color: rgba(255, 127, 80, 0.5);
   cursor: pointer;
+}
+
+.sider {
+  background-color: lightblue;
+}
+
+.header {
+  border-bottom: 3px gray solid;
 }
